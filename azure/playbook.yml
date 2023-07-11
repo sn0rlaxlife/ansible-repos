@@ -1,0 +1,13 @@
+---
+- name: 'Run a curl command to install kOps'
+  hosts: localhost
+  become: yes
+  tasks:
+  - name: 'Grab the installation kOps'
+    ansible.builtin.raw: curl kops curl -Lo kops https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-darwin-amd64 >> /tmp/kops
+  - name: 'chmod +x ./kops'
+    ansible.builtin.shell: chmod +x ./kops
+    args:
+      chdir: https://api.github.com/repos/kubernetes/kops/releases/latest
+  - name: 'Move kops to /usr/local/bin/'
+    ansible.builtin.raw: sudo mv ./kops /usr/local/bin/

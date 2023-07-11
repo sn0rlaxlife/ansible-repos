@@ -1,0 +1,40 @@
+---
+- name: 'Create a AKS instance with a sys node pool'
+  hosts: localhost
+  connection: local
+  vars:
+    resource_group: myResourceGroup
+    location: eastus
+    dns_prefix: aks-test
+    kubernetes_version: 1.25.0
+    linux_profile:
+      admin_username: azureuser
+      ssh_key: "ssh-rsa AAAAB"
+  
+  azure_rm_aks:
+    name: myAKSCluster
+    resource_group: myResourceGroup
+    location: eastus
+    dns_prefix: aks-test
+    kubernetes_version: 1.25.0
+    linux_profile:
+      admin_username: azureuser
+      ssh_key: "ssh-rsa AAAAB"
+    service_principal:
+      client_id: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
+      client_secret: "{{ lookup('env', 'AZURE_CLIENT_SECRET') }}"
+    agent_pool_profiles:
+    - name: default
+      count: 1
+      vm_size: Standard_DS2_v2
+      enable_auto_scaling: true
+      type: VirtualMachineScaleSets
+      mode: System
+      max_count: 3
+      min_count: 1
+      enable_rbac: yes
+    api_profile:
+      default: "latest"
+    api_server_access_profile:
+     authorized_ip_ranges: "172.40.0.0/16"
+     enable_private_cluster: false
