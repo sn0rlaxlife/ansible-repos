@@ -1,0 +1,27 @@
+- name: Create kOps resources....
+  hosts: localhost
+  connection: local
+  vars:
+    resource_group: kops
+    location: westus
+    storage_account_name: kopsstorageaccount
+    storage_account_type: Standard_LRS
+  tasks:
+  - name: 'Create resource group for kOps'
+    azure_rm_resourcegroup:
+      name: "{{ resource_group }}"
+      location: "{{ location }}"
+  - name: 'Create storage account for kOps'
+    azure_rm_storageaccount:
+      resource_group: "{{ resource_group }}"
+      name: "{{ storage_account_name }}"
+      location: "{{ location }}"
+      type: "{{ storage_account_type }}"
+      kind: Storage
+  - name: 'Create storage container kOps will use'
+    azure_rm_storageblob:
+      resource_group: "{{ resource_group }}"
+      storage_account_name: "{{ storage_account_name }}"
+      container: kops
+      state: present
+
